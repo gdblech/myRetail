@@ -110,3 +110,5 @@ captures/
 # IntelliJ
 *.iml
 .idea/
+/out/*
+blog*
