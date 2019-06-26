@@ -3,7 +3,8 @@ package rest;
 import java.math.BigDecimal;
 
 public class Product {
-    private int id;
+
+    private int pid;
     private String name;
     private String currencyCode;
     private BigDecimal value;
@@ -12,26 +13,43 @@ public class Product {
 
     //default tester product
     public Product(){
-        id = 123;
+        pid = 124;
         name = "Geoffrey's Great Movie";
         value = new BigDecimal("100.00");
         currencyCode = CurrencyHandling.USD;
 
     }
 
-    public Product(int id, String name, String currencyCode, BigDecimal value) {
-        this.id = id;
+    public Product(int pid, String name, String currencyCode, BigDecimal value) {
+        this.pid = pid;
         this.name = name;
         this.currencyCode = currencyCode;
         this.value = value;
     }
 
-    public int getId() {
-        return id;
+    public Product(int pid, String name, String currencyCode, String value) {
+        this.pid = pid;
+        this.name = name;
+        this.currencyCode = currencyCode;
+        this.value = new BigDecimal(value);
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public Product(String pid, String name, String currencyCode, String value) {
+        this.pid = Integer.parseInt(pid);
+        this.name = name;
+        this.currencyCode = currencyCode;
+        this.value = new BigDecimal(value);
+    }
+    public int getPid() {
+        return pid;
+    }
+
+    public void setPid(int pid) {
+        this.pid = pid;
+    }
+
+    public void setPid(String pid) {
+        this.pid = Integer.parseInt(pid);
     }
 
     public String getName() {
@@ -58,9 +76,13 @@ public class Product {
         this.value = value;
     }
 
+    public void setValue(String value) {
+        this.value = new BigDecimal(value);
+    }
+
     //todo
     @Override
     public String toString(){
-        return null;
+        return "{ \"id\":" + pid +", \"name\": \"" + name +"\", \"current_price\": { \"value\": \"" + value.toString() + "\", \"currency_code\": \"" + currencyCode + "\" }}";
     }
 }
