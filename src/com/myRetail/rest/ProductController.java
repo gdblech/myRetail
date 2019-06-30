@@ -30,7 +30,7 @@ public class ProductController {
         try {
             return mapper.writeValueAsString(repository.findAll());
         }catch(JsonProcessingException e){
-            return "failed to parse";
+            return new Product().toString();
         }
     }
 
@@ -66,22 +66,31 @@ public class ProductController {
         return "not available";
     }
 
-    //will update a product in mongo
-    @PostMapping("/product/{pid}")
+    //will update a product in mongo responds with the updated product
+    @PutMapping("/product/{pid}")
     public String postProduct(@PathVariable String pid, @RequestBody Product product) {
         repository.deleteAll(repository.findBypid(Integer.parseInt(pid)));
         repository.insert(product);
-        return "success!";
-
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            return mapper.writeValueAsString(product);
+        }catch(JsonProcessingException e){
+            return "failed to parse";
+        }
     }
 
-    //will put a new product into mongo
-    @PutMapping("/product/{pid}")
+    //will put a new product into mongo, respons with the new product
+    @PutMapping("/product")
     public String putProduct(@PathVariable String pid, @RequestBody Product product) {
         List<Product> available =  repository.findBypid(Integer.parseInt(pid));
         if(available.size() == 0){
             repository.insert(product);
-            return "success!";
+            ObjectMapper mapper = new ObjectMapper();
+            try {
+                return mapper.writeValueAsString(product);
+            }catch(JsonProcessingException e){
+                return "failed to parse";
+            }
         }else {
             return "Product already exists";
         }
@@ -127,12 +136,10 @@ public class ProductController {
         return "error failed to fetch";
     }
 
-    //todo load the readme as the base page.
     @RequestMapping("/")
     public String index() {
-        return "You Made it to the main page, but there is nothing here, sorry.";
+        return "You Made it to the root page, but there is nothing here, sorry.";
     }
 
 
-    //todo catch error page
 }
