@@ -37,7 +37,7 @@ public class ProductController {
     //will seed the mongo db with 1 product and then return all the products in mongo
     @RequestMapping("/seed")
     public String productSeed() {
-        repository.insert(new Product());
+        repository.insert(new Product(125, "Test Movie", "USD", 100.1));
         ObjectMapper mapper = new ObjectMapper();
         try {
             return mapper.writeValueAsString(repository.findAll());
