@@ -5,6 +5,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.config.AbstractMongoConfiguration;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
+//configuration class for the mongodb connection. Real world example would pull the mongo server address from a config file
+
 @Configuration
 @EnableMongoRepositories
 public class MongoConfig extends AbstractMongoConfiguration {

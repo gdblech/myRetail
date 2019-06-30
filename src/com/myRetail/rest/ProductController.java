@@ -1,59 +1,138 @@
 package rest;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.math.BigDecimal;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.List;
-import java.util.Map;
 
+//controller for the REST interface, CrossOrigin only for testing.
+@CrossOrigin
 @RestController
 public class ProductController {
 
+    //mongo connection
     @Autowired
     private ProductRepository repository;
 
+    //default product page will load all the products in the mongodb
     @RequestMapping("/product")
-    public String product(){
+    public String product() {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            return mapper.writeValueAsString(repository.findAll());
+        }catch(JsonProcessingException e){
+            return "failed to parse";
+        }
+    }
+
+    //will seed the mongo db with 1 product and then return all the products in mongo
+    @RequestMapping("/seed")
+    public String productSeed() {
         repository.insert(new Product());
-        return repository.findAll().toString();
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            return mapper.writeValueAsString(repository.findAll());
+        }catch(JsonProcessingException e){
+            return "failed to parse";
+        }
     }
 
+    //fetches only the matching product
     @GetMapping("/product/{pid}")
-    public String getProduct(@PathVariable int pid){
-        List<Product> matches = repository.findBypid(pid);
-        if(matches.size() == 0){
-            return fetchFromRemote(pid);
-        }
-        for(Product p: matches){
-            if(p.getPid() == pid){
-                return p.toString();
+    public String getProduct(@PathVariable int pid) {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            List<Product> matches = repository.findBypid(pid);
+            if (matches.size() == 0) {
+                return fetchFromRemote(pid);
             }
+            for (Product p : matches) {
+                if (p.getPid() == pid) {
+                    return mapper.writeValueAsString(p);
+                }
+            }
+        }catch(JsonProcessingException e){
+            return "Failed to parse json";
         }
-        return "failed to get";
+        return "not available";
     }
 
+    //will update a product in mongo
     @PostMapping("/product/{pid}")
-    public String postProduct(@PathVariable String pid, @RequestBody Map<String, String> body){
-        return null;
+    public String postProduct(@PathVariable String pid, @RequestBody Product product) {
+        repository.deleteAll(repository.findBypid(Integer.parseInt(pid)));
+        repository.insert(product);
+        return "success!";
+
     }
 
+    //will put a new product into mongo
     @PutMapping("/product/{pid}")
-    public String putProduct(@PathVariable String pid, @RequestBody Map<String, String> body){
-        return null;
+    public String putProduct(@PathVariable String pid, @RequestBody Product product) {
+        List<Product> available =  repository.findBypid(Integer.parseInt(pid));
+        if(available.size() == 0){
+            repository.insert(product);
+            return "success!";
+        }else {
+            return "Product already exists";
+        }
     }
 
+
+    //removes a product from mongo
     @DeleteMapping("/product/{pid}")
-    public String deleteProduct(@PathVariable String pid){
-        return null;
+    public String deleteProduct(@PathVariable String pid) {
+        repository.deleteAll(repository.findBypid(Integer.parseInt(pid)));
+        return "success!";
     }
 
+    //fetches product from remote rest server
     private String fetchFromRemote(int pid) {
-        return "not in mongo";
-    }
-//    @RequestMapping("/")
-//    public String index(){
-//        return "You Made it to the main page";
-//    }
-//
 
+        try {
+            URL url = new URL("https://redsky.target.com/v2/pdp/tcin/" + pid +
+                    "?excludes=bulk_ship,promotion,rating_and_review_reviews,question_answer_statistics,deep_red_labels," +
+                    "available_to_promise_network,rating_and_review_statistics");
+            HttpURLConnection redSky = (HttpURLConnection) url.openConnection();
+            redSky.setRequestMethod("GET");
+            redSky.connect();
+            if (redSky.getResponseCode() == 200) {
+                BufferedReader reply = new BufferedReader(new InputStreamReader(redSky.getInputStream()));
+                String response = reply.readLine();
+
+                reply.close();
+                redSky.disconnect();
+
+                JSONObject json = new JSONObject(response);
+                BigDecimal value = json.getJSONObject("product").getJSONObject("price").getJSONObject("listPrice").getBigDecimal("price");
+                String name = json.getJSONObject("product").getJSONObject("item").getJSONObject("product_description").getString("title");
+                //int pid, String name, String currencyCode, BigDecimal value
+                Product product = new Product(pid, name, CurrentPrice.USD, value);
+                repository.insert(product);
+                return product.toString();
+            }
+        } catch (IOException e) {
+            return e.toString();
+        }
+
+        return "error failed to fetch";
+    }
+
+    //todo load the readme as the base page.
+    @RequestMapping("/")
+    public String index() {
+        return "You Made it to the main page, but there is nothing here, sorry.";
+    }
+
+
+    //todo catch error page
 }

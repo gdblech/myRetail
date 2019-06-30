@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="MyRetail Products">
+<head>
+    <meta charset="UTF-8">
+    <title>My Retail!</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js"></script>
+    <script src="myRetail.js"></script>
+</head>
+<body ng-controller="main">
+<form ng-submit="getProduct()">
+    <input type="number" placeholder="Product ID" ng-model="pid"/>
+    <a routerLink="/search">
+        <button class="btn btn-success"> Submit</button>
+    </a>
+</form>
+
+<hr>
+
+
+<div>
+    <p>Product ID: {{response.id}}</p>
+    <p>Product Name: {{response.name}}</p>
+    <p>Current Price: {{response.current_price.value}}</p>
+    <p>Currency: {{response.current_price.currency_code}}</p>
+</div>
+
+<hr>
+
+<form ng-submit="update()">
+    <input type="text" placeholder="Name" ng-model="editName"/>
+    <input type="text" placeholder="Value" ng-model="editValue"/>
+    <input type="text" placeholder="Currency" ng-model="editCurrency"/>
+    <button type="submit">Update</button>
+</form>
+
+<hr>
+
+<form ng-submit="newProduct()">
+    <input type="text" placeholder="ID" ng-model="newID"/>
+    <input type="text" placeholder="Name" ng-model="newName"/>
+    <input type="text" placeholder="Value" ng-model="newValue"/>
+    <input type="text" placeholder="Currency" ng-model="newCurrency"/>
+    <button type="submit">Update</button>
+</form>
+
+
+</body>
+</html>
