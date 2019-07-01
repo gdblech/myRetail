@@ -29,5 +29,5 @@ Spring, Java, MongoDB, Angular.JS
 2.b.1 In the JAR folder is a runnable jar  
 2.b.2 run the command: java -jar myRetail.jar  
 
-5. REST interactions can also be done with a tool like PostMan.
+3. REST interactions can also be done with a tool like PostMan.
 
