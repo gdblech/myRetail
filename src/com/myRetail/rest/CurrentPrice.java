@@ -17,6 +17,8 @@ public final class CurrentPrice {
         this.currencyCode = currencyCode;
     }
 
+    public CurrentPrice(){};
+
     public CurrentPrice(String value, String currencyCode) {
         this.value = new BigDecimal(value);
         this.currencyCode = currencyCode;

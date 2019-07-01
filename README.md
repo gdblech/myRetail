@@ -29,6 +29,5 @@ Spring, Java, MongoDB, Angular.JS
 2.b.1 In the JAR folder is a runnable jar  
 2.b.2 run the command: java -jar myRetail.jar  
 
-3. In the JAR folder is an Angular webpage to Run commands against the app.  
-4. REST interactions can also be done with a tool like PostMan.
+5. REST interactions can also be done with a tool like PostMan.
 

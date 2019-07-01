@@ -15,18 +15,18 @@
 <hr>
 <br>
 <div>
-    <p>Product ID: {{response.id}}</p>
+    <p>Product ID: {{response.pid}}</p>
     <p>Product Name: {{response.name}}</p>
-    <p>Current Price: {{response.current_price.value}}</p>
-    <p>Currency: {{response.current_price.currency_code}}</p>
+    <p>Current Price: {{response.currentPrice.value}}</p>
+    <p>Currency: {{response.currentPrice.currencyCode}}</p>
 </div>
 <br>
 <hr>
 <br>
 <form ng-submit="update()">
     <input type="text" placeholder={{response.name}} ng-model="editName"/>
-    <input type="text" placeholder={{response.current_price.value}} ng-model="editValue"/>
-    <input type="text" placeholder={{response.current_price.currency_code}} ng-model="editCurrency"/>
+    <input type="text" placeholder={{response.currentPrice.value}} ng-model="editValue"/>
+    <input type="text" placeholder={{response.currentPrice.currencyCode}} ng-model="editCurrency"/>
     <button type="submit">Update</button>
 </form>
 <br>

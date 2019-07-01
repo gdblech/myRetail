@@ -37,7 +37,7 @@ public class ProductController {
     //will seed the mongo db with 1 product and then return all the products in mongo
     @RequestMapping("/seed")
     public String productSeed() {
-        repository.insert(new Product(125, "Test Movie", "USD", 100.1));
+        repository.insert(new Product("123", "Test Movie", "USD", 100.25));
         ObjectMapper mapper = new ObjectMapper();
         try {
             return mapper.writeValueAsString(repository.findAll());
@@ -48,7 +48,7 @@ public class ProductController {
 
     //fetches only the matching product
     @GetMapping("/product/{pid}")
-    public String getProduct(@PathVariable int pid) {
+    public String getProduct(@PathVariable String pid) {
         ObjectMapper mapper = new ObjectMapper();
         try {
             List<Product> matches = repository.findBypid(pid);
@@ -56,7 +56,7 @@ public class ProductController {
                 return fetchFromRemote(pid);
             }
             for (Product p : matches) {
-                if (p.getPid() == pid) {
+                if (p.getPid().equals(pid)) {
                     return mapper.writeValueAsString(p);
                 }
             }
@@ -69,7 +69,7 @@ public class ProductController {
     //will update a product in mongo responds with the updated product
     @PutMapping("/product/{pid}")
     public String postProduct(@PathVariable String pid, @RequestBody Product product) {
-        repository.deleteAll(repository.findBypid(Integer.parseInt(pid)));
+        repository.deleteAll(repository.findBypid(pid));
         repository.insert(product);
         ObjectMapper mapper = new ObjectMapper();
         try {
@@ -81,8 +81,8 @@ public class ProductController {
 
     //will put a new product into mongo, respons with the new product
     @PutMapping("/product")
-    public String putProduct(@PathVariable String pid, @RequestBody Product product) {
-        List<Product> available =  repository.findBypid(Integer.parseInt(pid));
+    public String putProduct(@RequestBody Product product) {
+        List<Product> available =  repository.findBypid(product.getPid());
         if(available.size() == 0){
             repository.insert(product);
             ObjectMapper mapper = new ObjectMapper();
@@ -100,12 +100,12 @@ public class ProductController {
     //removes a product from mongo
     @DeleteMapping("/product/{pid}")
     public String deleteProduct(@PathVariable String pid) {
-        repository.deleteAll(repository.findBypid(Integer.parseInt(pid)));
+        repository.deleteAll(repository.findBypid(pid));
         return "success!";
     }
 
     //fetches product from remote rest server
-    private String fetchFromRemote(int pid) {
+    private String fetchFromRemote(String pid) {
 
         try {
             URL url = new URL("https://redsky.target.com/v2/pdp/tcin/" + pid +

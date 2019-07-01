@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 //basic class for a product
 public class Product {
 
-    private int pid;
+    private String pid;
     private String name;
     private CurrentPrice currentPrice;
 
@@ -21,45 +21,45 @@ public class Product {
     public Product(){}
 
 
-    public Product(int pid, String name, String currencyCode, BigDecimal value) {
-        this.pid = pid;
-        this.name = name;
-        this.currentPrice = new CurrentPrice(value, currencyCode);
-    }
-
-    public Product(int pid, String name, String currencyCode, String value) {
-        this.pid = pid;
-        this.name = name;
-        this.currentPrice = new CurrentPrice(value, currencyCode);
-    }
-
-    public Product(int pid, String name, String currencyCode, double value) {
-        this.pid = pid;
-        this.name = name;
-        this.currentPrice = new CurrentPrice(value, currencyCode);
-    }
-
-    public Product(int pid, String name, String currencyCode, float value) {
+    public Product(String pid, String name, String currencyCode, BigDecimal value) {
         this.pid = pid;
         this.name = name;
         this.currentPrice = new CurrentPrice(value, currencyCode);
     }
 
     public Product(String pid, String name, String currencyCode, String value) {
-        this.pid = Integer.parseInt(pid);
+        this.pid = pid;
         this.name = name;
         this.currentPrice = new CurrentPrice(value, currencyCode);
     }
-    public int getPid() {
+
+    public Product(String pid, String name, String currencyCode, double value) {
+        this.pid = pid;
+        this.name = name;
+        this.currentPrice = new CurrentPrice(value, currencyCode);
+    }
+
+    public Product(String pid, String name, String currencyCode, float value) {
+        this.pid = pid;
+        this.name = name;
+        this.currentPrice = new CurrentPrice(value, currencyCode);
+    }
+
+    public Product(int pid, String name, String currencyCode, String value) {
+        this.pid = Integer.toString(pid);
+        this.name = name;
+        this.currentPrice = new CurrentPrice(value, currencyCode);
+    }
+    public String getPid() {
         return pid;
     }
 
-    public void setPid(int pid) {
+    public void setPid(String pid) {
         this.pid = pid;
     }
 
-    public void setPid(String pid) {
-        this.pid = Integer.parseInt(pid);
+    public void setPid(int pid) {
+        this.pid = Integer.toString(pid);
     }
 
     public String getName() {
