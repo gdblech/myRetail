@@ -18,7 +18,7 @@ Spring, Java, MongoDB, Angular.JS
 |DELETE|/product/{id} |Removes the product from local DB|
 
 
-##Instructions for Running
+## Instructions for Running
 
 1. Start a local instance of mongoDB
 
