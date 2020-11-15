@@ -1,4 +1,6 @@
-package rest;
+package com.myRetail.persistence.model;
+
+import com.myRetail.rest.CurrentPrice;
 
 import java.math.BigDecimal;
 

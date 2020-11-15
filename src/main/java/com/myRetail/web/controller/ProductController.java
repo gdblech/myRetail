@@ -1,7 +1,10 @@
-package rest;
+package com.myRetail.web.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.myRetail.persistence.model.Product;
+import com.myRetail.persistence.repository.ProductRepository;
+import com.myRetail.rest.CurrentPrice;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

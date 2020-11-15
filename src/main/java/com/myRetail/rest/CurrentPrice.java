@@ -1,4 +1,4 @@
-package rest;
+package com.myRetail.rest;
 
 import java.math.BigDecimal;
 //class to represent the current price of a product
@@ -17,7 +17,7 @@ public final class CurrentPrice {
         this.currencyCode = currencyCode;
     }
 
-    public CurrentPrice(){};
+    public CurrentPrice(){}
 
     public CurrentPrice(String value, String currencyCode) {
         this.value = new BigDecimal(value);
