@@ -1,21 +1,23 @@
 package com.myRetail.persistence.model;
 
-import com.myRetail.rest.CurrentPrice;
+import org.springframework.data.annotation.Id;
 
 import java.math.BigDecimal;
+
 
 //basic class for a product
 public class Product {
 
-    private String pid;
+    @Id
+    private Long id;
     private String name;
-    private CurrentPrice currentPrice;
+    private BigDecimal currentPrice;
 
-    public CurrentPrice getCurrentPrice() {
+    public BigDecimal getCurrentPrice() {
         return currentPrice;
     }
 
-    public void setCurrentPrice(CurrentPrice currentPrice) {
+    public void setCurrentPrice(BigDecimal currentPrice) {
         this.currentPrice = currentPrice;
     }
 
@@ -23,45 +25,42 @@ public class Product {
     public Product(){}
 
 
-    public Product(String pid, String name, String currencyCode, BigDecimal value) {
-        this.pid = pid;
+    public Product(Long id, String name, BigDecimal value) {
+        this.id = id;
         this.name = name;
-        this.currentPrice = new CurrentPrice(value, currencyCode);
+        this.currentPrice = value;
     }
 
-    public Product(String pid, String name, String currencyCode, String value) {
-        this.pid = pid;
+    public Product(Long id, String name, String value) {
+        this.id = id;
         this.name = name;
-        this.currentPrice = new CurrentPrice(value, currencyCode);
+        this.currentPrice = new BigDecimal(value);
     }
 
-    public Product(String pid, String name, String currencyCode, double value) {
-        this.pid = pid;
+    public Product(Long id, String name, double value) {
+        this.id = id;
         this.name = name;
-        this.currentPrice = new CurrentPrice(value, currencyCode);
+        this.currentPrice = new BigDecimal(value);
     }
 
-    public Product(String pid, String name, String currencyCode, float value) {
-        this.pid = pid;
+    public Product(Long id, String name, float value) {
+        this.id = id;
         this.name = name;
-        this.currentPrice = new CurrentPrice(value, currencyCode);
+        this.currentPrice = new BigDecimal(value);
     }
 
-    public Product(int pid, String name, String currencyCode, String value) {
-        this.pid = Integer.toString(pid);
-        this.name = name;
-        this.currentPrice = new CurrentPrice(value, currencyCode);
-    }
-    public String getPid() {
-        return pid;
+    public Product(Product product){
+        this.id = product.id;
+        this.name = product.name;
+        this.currentPrice = product.currentPrice;
     }
 
-    public void setPid(String pid) {
-        this.pid = pid;
+    public Long getId() {
+        return id;
     }
 
-    public void setPid(int pid) {
-        this.pid = Integer.toString(pid);
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -72,6 +71,7 @@ public class Product {
         this.name = name;
     }
 
+    //todo
     @Override
     public String toString() {
         return "{}";

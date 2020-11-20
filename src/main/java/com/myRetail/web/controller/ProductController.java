@@ -1,12 +1,10 @@
 package com.myRetail.web.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+
 import com.myRetail.persistence.model.Product;
-import com.myRetail.persistence.repository.ProductRepository;
-import com.myRetail.rest.CurrentPrice;
+import com.myRetail.service.impl.ProductServiceImpl;
 import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.BufferedReader;
@@ -15,100 +13,77 @@ import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.List;
+import java.util.Collection;
+import java.util.Optional;
+
 
 //controller for the REST interface, CrossOrigin only for testing.
 @CrossOrigin
 @RestController
 public class ProductController {
 
-    //mongo connection
-    @Autowired
-    private ProductRepository repository;
+    private ProductServiceImpl projectService;
 
-    //default product page will load all the products in the mongodb
-    @RequestMapping("/product")
-    public String product() {
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            return mapper.writeValueAsString(repository.findAll());
-        }catch(JsonProcessingException e){
-            return new Product().toString();
-        }
+    //default product page will load all the products in the db
+    @RequestMapping("/products")
+    public Collection<Product> product() {
+        return projectService.findAll();
     }
 
-    //will seed the mongo db with 1 product and then return all the products in mongo
+    //will seed the mongo db with 2 products and then return all the products in mongo
     @RequestMapping("/seed")
-    public String productSeed() {
-        repository.insert(new Product("123", "Test Movie", "USD", 100.25));
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            return mapper.writeValueAsString(repository.findAll());
-        }catch(JsonProcessingException e){
-            return "failed to parse";
-        }
+    public Collection<Product> productSeed() {
+        projectService.save(new Product(1234L, "Test Movie", 100.25));
+        projectService.save(new Product(1235L, "Test Movie 2: Now with Ducks", 11.43));
+
+        return projectService.findAll();
+    }
+
+    @DeleteMapping("/clean")
+    public void cleanUp() {
+        projectService.deleteAll();
     }
 
     //fetches only the matching product
-    @GetMapping("/product/{pid}")
-    public String getProduct(@PathVariable String pid) {
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            List<Product> matches = repository.findBypid(pid);
-            if (matches.size() == 0) {
-                return fetchFromRemote(pid);
-            }
-            for (Product p : matches) {
-                if (p.getPid().equals(pid)) {
-                    return mapper.writeValueAsString(p);
-                }
-            }
-        }catch(JsonProcessingException e){
-            return "Failed to parse json";
-        }
-        return "not available";
+    @GetMapping("/product/{id}")
+    public Product getProduct(@PathVariable Long id) {
+        Optional<Product> match = projectService.findById(id);
+        return match.orElseGet(() -> fetchFromRedSky(id));
     }
 
     //will update a product in mongo responds with the updated product
-    @PutMapping("/product/{pid}")
-    public String postProduct(@PathVariable String pid, @RequestBody Product product) {
-        repository.deleteAll(repository.findBypid(pid));
-        repository.insert(product);
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            return mapper.writeValueAsString(product);
-        }catch(JsonProcessingException e){
-            return "failed to parse";
-        }
+    @PutMapping("/product/{id}")
+    public void putProduct(@PathVariable Long id, @RequestBody Product product) {
+        //todo
     }
 
-    //will put a new product into mongo, respons with the new product
-    @PutMapping("/product")
-    public String putProduct(@RequestBody Product product) {
-        List<Product> available =  repository.findBypid(product.getPid());
-        if(available.size() == 0){
-            repository.insert(product);
-            ObjectMapper mapper = new ObjectMapper();
-            try {
-                return mapper.writeValueAsString(product);
-            }catch(JsonProcessingException e){
-                return "failed to parse";
-            }
-        }else {
-            return "Product already exists";
-        }
-    }
 
+    //todo post mapping
+    //will put a new product into mongo, response with the new product
+    @PostMapping("/product")
+    @ResponseStatus(HttpStatus.CREATED)
+    public void postProduct(@RequestBody Product product) {
+        Optional<Product> match =  projectService.findById(product.getId()); //todo fix
+
+        //todo add logic to add product or return already exists
+    }
 
     //removes a product from mongo
-    @DeleteMapping("/product/{pid}")
-    public String deleteProduct(@PathVariable String pid) {
-        repository.deleteAll(repository.findBypid(pid));
-        return "success!";
+    @DeleteMapping("/product/{id}")
+    public HttpStatus deleteProduct(@PathVariable Long id) {
+        projectService.delete(id);
+        return HttpStatus.OK;
     }
 
+
+    //todo
+    private Product fetchFromRedSky(Long id){
+        return null;
+    }
+
+    @Deprecated
     //fetches product from remote rest server
-    private String fetchFromRemote(String pid) {
+    private String fetchFromRemote(Long pid) {
 
         try {
             URL url = new URL("https://redsky.target.com/v2/pdp/tcin/" + pid +
@@ -128,8 +103,8 @@ public class ProductController {
                 BigDecimal value = json.getJSONObject("product").getJSONObject("price").getJSONObject("listPrice").getBigDecimal("price");
                 String name = json.getJSONObject("product").getJSONObject("item").getJSONObject("product_description").getString("title");
                 //int pid, String name, String currencyCode, BigDecimal value
-                Product product = new Product(pid, name, CurrentPrice.USD, value);
-                repository.insert(product);
+                Product product = new Product(pid, name, value);
+                projectService.save(product);
                 return product.toString();
             }
         } catch (IOException e) {
