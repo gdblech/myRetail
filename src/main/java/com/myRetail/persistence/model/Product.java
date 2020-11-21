@@ -3,6 +3,7 @@ package com.myRetail.persistence.model;
 import org.springframework.data.annotation.Id;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 
 
 //basic class for a product
@@ -71,9 +72,24 @@ public class Product {
         this.name = name;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Product)) return false;
+        Product product = (Product) o;
+        return id.equals(product.id) &&
+                name.equals(product.name) &&
+                currentPrice.equals(product.currentPrice);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, currentPrice);
+    }
+
     //todo
     @Override
     public String toString() {
-        return "{}";
+        return id + ": " + name;
     }
 }

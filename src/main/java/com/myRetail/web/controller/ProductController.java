@@ -4,6 +4,7 @@ package com.myRetail.web.controller;
 import com.myRetail.persistence.model.Product;
 import com.myRetail.service.impl.ProductServiceImpl;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,21 +18,25 @@ import java.util.Collection;
 import java.util.Optional;
 
 
-//controller for the REST interface, CrossOrigin only for testing.
-@CrossOrigin
+//controller for the REST interface.
 @RestController
 public class ProductController {
 
+
     private ProductServiceImpl projectService;
 
+    public ProductController(ProductServiceImpl projectService){
+        this.projectService = projectService;
+    }
+
     //default product page will load all the products in the db
-    @RequestMapping("/products")
+    @GetMapping("/products")
     public Collection<Product> product() {
         return projectService.findAll();
     }
 
     //will seed the mongo db with 2 products and then return all the products in mongo
-    @RequestMapping("/seed")
+    @GetMapping("/seed")
     public Collection<Product> productSeed() {
         projectService.save(new Product(1234L, "Test Movie", 100.25));
         projectService.save(new Product(1235L, "Test Movie 2: Now with Ducks", 11.43));
@@ -62,10 +67,15 @@ public class ProductController {
     //will put a new product into mongo, response with the new product
     @PostMapping("/product")
     @ResponseStatus(HttpStatus.CREATED)
-    public void postProduct(@RequestBody Product product) {
-        Optional<Product> match =  projectService.findById(product.getId()); //todo fix
+    public Product postProduct(@RequestBody Product product) {
+        Optional<Product> match =  projectService.findById(product.getId());
+        if(match.isPresent()){
+            //todo make it so it throws a different res status
+            return null;
+        }
+        projectService.save(product);
+        return product;
 
-        //todo add logic to add product or return already exists
     }
 
     //removes a product from mongo
