@@ -12,4 +12,5 @@ public interface ProductServiceInterface {
     void delete(Long id);
     Iterable<Product> findByName(String name);
     void deleteAll();
+    Product update(Product product);
 }

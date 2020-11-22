@@ -46,4 +46,10 @@ public class ProductServiceImpl implements ProductServiceInterface {
     public void deleteAll() {
         productRepository.deleteAll();
     }
+
+    @Override
+    public Product update(Product product) {
+
+        return productRepository.save(product);
+    }
 }

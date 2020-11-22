@@ -1,30 +1,26 @@
 package com.myRetail.persistence.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.data.annotation.Id;
 
 import java.math.BigDecimal;
+import java.util.Map;
 import java.util.Objects;
 
 
-//basic class for a product
+//basie class for a product
+//@JsonIgnoreProperties(ignoreUnknown = true)
 public class Product {
 
     @Id
     private Long id;
     private String name;
-    private BigDecimal currentPrice;
+    private BigDecimal currentPrice = new BigDecimal(0);
+    private String currencyCode = "USD";
 
-    public BigDecimal getCurrentPrice() {
-        return currentPrice;
+    public Product() {
     }
-
-    public void setCurrentPrice(BigDecimal currentPrice) {
-        this.currentPrice = currentPrice;
-    }
-
-
-    public Product(){}
-
 
     public Product(Long id, String name, BigDecimal value) {
         this.id = id;
@@ -38,11 +34,13 @@ public class Product {
         this.currentPrice = new BigDecimal(value);
     }
 
+
     public Product(Long id, String name, double value) {
         this.id = id;
         this.name = name;
         this.currentPrice = new BigDecimal(value);
     }
+
 
     public Product(Long id, String name, float value) {
         this.id = id;
@@ -50,10 +48,22 @@ public class Product {
         this.currentPrice = new BigDecimal(value);
     }
 
-    public Product(Product product){
+    public Product(Product product) {
         this.id = product.id;
         this.name = product.name;
         this.currentPrice = product.currentPrice;
+    }
+
+    public String getCurrencyCode() {
+        return currencyCode;
+    }
+
+    public BigDecimal getCurrentPrice() {
+        return currentPrice;
+    }
+
+    public void setCurrentPrice(BigDecimal currentPrice) {
+        this.currentPrice = currentPrice;
     }
 
     public Long getId() {
@@ -87,9 +97,17 @@ public class Product {
         return Objects.hash(id, name, currentPrice);
     }
 
-    //todo
+    @SuppressWarnings("unchecked")
+    @JsonProperty("item")
+    public void unpack(Map<String, Object> item) {
+        this.id = Long.parseLong((String) item.get("tcin"));
+        Map<String, Object> prodDesc = (Map<String, Object>) item.get("product_description");
+        this.name = (String) prodDesc.get("title");
+    }
+
+
     @Override
     public String toString() {
-        return id + ": " + name;
+        return id + ": " + name + ", " + currentPrice;
     }
 }

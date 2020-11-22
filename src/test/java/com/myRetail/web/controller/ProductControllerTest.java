@@ -75,14 +75,6 @@ class ProductControllerTest {
     }
 
     @Test
-    @Order(4)
-    void getProduct_thatDoesNotExist() {
-        ResponseEntity<Product> responseEntity = restTemplate.getForEntity(BASE_URL + "product/" + "0", Product.class);
-        assertNull(responseEntity.getBody());
-        assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
-    }
-
-    @Test
     @Order(5)
     void postProduct() {
         ResponseEntity<Product> responseEntity = restTemplate.postForEntity(BASE_URL + "product", p3, Product.class);
